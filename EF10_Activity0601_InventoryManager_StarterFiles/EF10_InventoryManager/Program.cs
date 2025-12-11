@@ -1,0 +1,45 @@
+﻿using System.Threading;
+using EF10_InventoryDBLibrary;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
+namespace EF10_InventoryManager;
+
+public class Program
+{
+    public static async Task Main(string[] args)
+    {
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+        var appSettingsFile = string.IsNullOrWhiteSpace(environment)
+            ? "appsettings.json"
+            : $"appsettings.{environment}.json";
+
+        var host = Host.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration((context, config) =>
+            {
+                config.SetBasePath(Directory.GetCurrentDirectory());
+                config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                config.AddJsonFile(appSettingsFile, optional: true);
+                config.AddEnvironmentVariables();
+                config.AddUserSecrets<Program>();
+            })
+            .ConfigureServices((context, services) =>
+            {
+                var connectionString = context.Configuration.GetConnectionString("InventoryDbConnection");
+
+                services.AddDbContext<InventoryDbContext>(options =>
+                    options.UseSqlServer(connectionString));
+
+                // Add other services here if needed
+                services.AddTransient<Application>();
+            })
+            .Build();
+
+        using var scope = host.Services.CreateScope();
+        var app = scope.ServiceProvider.GetRequiredService<Application>();
+        await app.DoWork();
+    }
+}
+

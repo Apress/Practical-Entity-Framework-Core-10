@@ -1,0 +1,24 @@
+<Project>
+    <PropertyGroup>
+        <TargetFrameworkVersion>net10.0</TargetFrameworkVersion>
+        <MicrosoftEntityFrameworkCoreVersion>10.0.0</MicrosoftEntityFrameworkCoreVersion>
+        <MicrosoftEntityFrameworkCoreSqlServerVersion>10.0.0</MicrosoftEntityFrameworkCoreSqlServerVersion>
+        <MicrosoftEntityFrameworkCoreToolsVersion>10.0.0</MicrosoftEntityFrameworkCoreToolsVersion>
+        <MicrosoftEntityFrameworkCoreDesignVersion>10.0.0</MicrosoftEntityFrameworkCoreDesignVersion>
+        <MicrosoftExtensionsConfigurationVersion>10.0.0</MicrosoftExtensionsConfigurationVersion>
+        <MicrosoftExtensionsConfigurationJsonVersion>10.0.0</MicrosoftExtensionsConfigurationJsonVersion>
+        <MicrosoftExtensionsEnvironmentVariablesConfigurationVersion>10.0.0</MicrosoftExtensionsEnvironmentVariablesConfigurationVersion>
+        <MicrosoftExtensionsConfigurationUserSecretsVersion>10.0.0</MicrosoftExtensionsConfigurationUserSecretsVersion>
+        <MicrosoftEntityFrameworkCoreProxiesVersion>10.0.0</MicrosoftEntityFrameworkCoreProxiesVersion>
+        <MicrosoftExtensionsDependencyInjectionVersion>10.0.0</MicrosoftExtensionsDependencyInjectionVersion>
+        <MicrosoftExtensionsHostingVersion>10.0.0</MicrosoftExtensionsHostingVersion>
+        <MicrosoftEntityFrameworkCoreAbstractionsVersion>10.0.0</MicrosoftEntityFrameworkCoreAbstractionsVersion>
+        <MicrosoftExtensionsLoggingConsoleVersion>10.0.0</MicrosoftExtensionsLoggingConsoleVersion>
+        <SerilogVersion>4.3.1-dev-02373</SerilogVersion>
+	    <SerilogExtensionsHostingVersion>10.0.0</SerilogExtensionsHostingVersion>
+        <SerilogSettingsConfigurationVersion>10.0.0</SerilogSettingsConfigurationVersion>
+	    <SerilogSinksConsoleVersion>6.1.1</SerilogSinksConsoleVersion>
+	    <SerilogSinksFileVersion>7.0.0</SerilogSinksFileVersion>
+        <AutoMapperVersion>15.0.1</AutoMapperVersion>
+    </PropertyGroup>
+</Project>

@@ -1,0 +1,26 @@
+name: Inventory Manager Build and Deploy Orchestrator
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build:
+    uses: ./.github/workflows/build-and-test.yml
+
+  publish_image:
+    needs: build
+    uses: ./.github/workflows/publish-image.yml
+    secrets:
+      GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+
+  deploy:
+    needs: publish_image
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit

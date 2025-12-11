@@ -1,0 +1,54 @@
+Use this as a guidepost, select only one of the connection string formats, depending on if you are using a container or not.
+
+{
+  "ConnectionStrings": {
+    "AWDbConnectionContainer": "Server=localhost;Database=AdventureWorks2022;User Id=sa;Password=your-password-here;TrustServerCertificate=True;MultipleActiveResultSets=False;",
+    "AWDbConnectionNative": "Data Source=localhost;Initial Catalog=AdventureWorks2022;Trusted_Connection=True";TrustServerCertificate=True;MultipleActiveResultSets=False;"
+  }
+}
+
+//the download for AdventureWorks (in case you need to restore it)
+https://learn.microsoft.com/en-us/sql/samples/adventureworks-install-configure?view=sql-server-ver17&tabs=ssms  
+
+---------------
+Example Commands:
+
+//note: prior to EF10, would not work without putting appsettings.json file copy in the root folder, may have issues with special characters
+dotnet ef dbcontext scaffold 'Name=AWDbConnection' Microsoft.EntityFrameworkCore.SqlServer --project EF10_AWDBLibrary --startup-project EF10_Activity0201 --output-dir Models --context-dir . --context AdventureWorksContext --force
+
+//hard code your connection string
+dotnet ef dbcontext scaffold 'your-connection-string-here' Microsoft.EntityFrameworkCore.SqlServer --project EF10_AWDBLibrary --startup-project EF10_Activity0201 --output-dir Models --context-dir . --context AdventureWorksContext --force
+
+//single schema
+dotnet ef dbcontext scaffold 'your-connection-string-here' Microsoft.EntityFrameworkCore.SqlServer --project EF10_AWDBLibrary --startup-project EF10_Activity0201 --output-dir Models --context-dir . --context AdventureWorksContext --force --schema <schemaName>
+
+//Currently the only thing that works, but wipes out the context on every new table so no good
+//single table
+dotnet ef dbcontext scaffold 'your-connection-string-here' Microsoft.EntityFrameworkCore.SqlServer --project EF10_AWDBLibrary --startup-project EF10_Activity0201 --output-dir Models --context-dir . --context AdventureWorksContext --force --table <schemaName.tableName>
+
+//multiple tables
+NOTE: --tables does not currently work in .NET 10 Preview
+```bash
+dotnet ef dbcontext scaffold 'your-connection-string' Microsoft.EntityFrameworkCore.SqlServer \
+  --project EF10_AWDBLibrary \
+  --startup-project EF10_Activity0201 \
+  --output-dir Models \
+  --context-dir . \
+  --context AdventureWorksContext \
+  --force \
+  --tables SalesLT.Address,SalesLT.Customer,dbo.BuildVersion
+```  
+
+```PowerShell
+dotnet ef dbcontext scaffold 'your-connection-string' Microsoft.EntityFrameworkCore.SqlServer `
+  --project EF10_AWDBLibrary `
+  --startup-project EF10_Activity0201 `
+  --output-dir Models `
+  --context-dir . `
+  --context AdventureWorksContext `
+  --force `
+  --tables SalesLT.Address,SalesLT.Customer,dbo.BuildVersion
+```  
+
+
+

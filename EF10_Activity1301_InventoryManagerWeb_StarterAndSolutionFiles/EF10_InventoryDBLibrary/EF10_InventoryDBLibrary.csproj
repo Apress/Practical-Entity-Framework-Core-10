@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>$(TargetFrameworkVersion)</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(MicrosoftEntityFrameworkCoreVersion)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="$(MicrosoftEntityFrameworkCoreDesignVersion)">
+      <PrivateAssets>all</PrivateAssets>
+      <ExcludeAssets>contentFiles</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(MicrosoftEntityFrameworkCoreSqlServerVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftExtensionsConfigurationVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftExtensionsConfigurationJsonVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EF10_InventoryModels\EF10_InventoryModels.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\**\*.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Migrations\Scripts\Procedures\GetItemsByType\**" />
+    <EmbeddedResource Remove="Migrations\Scripts\Procedures\GetItemsByType\**" />
+    <None Remove="Migrations\Scripts\Procedures\GetItemsByType\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Migrations\Scripts\Functions\GetContributorScore\" />
+    <Folder Include="Migrations\Scripts\Functions\ItemsWithCsvDetails\" />
+    <Folder Include="Migrations\Scripts\Procedures\GetItemsByGenre\" />
+    <Folder Include="Migrations\Scripts\Views\ItemsWithGenresAndContributors\" />
+  </ItemGroup>
+</Project>

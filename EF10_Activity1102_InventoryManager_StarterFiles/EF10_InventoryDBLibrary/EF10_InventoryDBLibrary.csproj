@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>$(TargetFrameworkVersion)</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>11020401-02c6-4791-8440-583048350111</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(MicrosoftEntityFrameworkCoreVersion)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="$(MicrosoftEntityFrameworkCoreDesignVersion)">
+      <PrivateAssets>all</PrivateAssets>
+      <ExcludeAssets>contentFiles</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(MicrosoftEntityFrameworkCoreSqlServerVersion)" />
+	<PackageReference Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftExtensionsConfigurationVersion)" />
+	<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftExtensionsConfigurationJsonVersion)" />
+	<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="$(MicrosoftExtensionsConfigurationUserSecretsVersion)" />
+	<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(MicrosoftExtensionsEnvironmentVariablesConfigurationVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<EmbeddedResource Include="Migrations\Scripts\**\*.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\Scripts\Scripts\**" />
+    <EmbeddedResource Remove="Migrations\Scripts\Scripts\**" />
+    <None Remove="Migrations\Scripts\Scripts\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EF10_InventoryModels\EF10_InventoryModels.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\Scripts\Functions\CalculateItemValue\" />
+    <Folder Include="Migrations\Scripts\Functions\GetContributorScore\" />
+    <Folder Include="Migrations\Scripts\Functions\TopValuedItems\" />
+    <Folder Include="Migrations\Scripts\Procedures\GetItemsByCategory\" />
+    <Folder Include="Migrations\Scripts\Procedures\GetItemsByGenre\" />
+  </ItemGroup>
+</Project>

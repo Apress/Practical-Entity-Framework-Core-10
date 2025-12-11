@@ -1,0 +1,95 @@
+﻿@model EF10_InventoryModels.DTOs.ItemEditViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Item</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Item.Name" class="control-label"></label>
+                <input asp-for="Item.Name" class="form-control" />
+                <span asp-validation-for="Item.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Item.Quantity" class="control-label"></label>
+                <input asp-for="Item.Quantity" class="form-control" />
+                <span asp-validation-for="Item.Quantity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Item.Description" class="control-label"></label>
+                <input asp-for="Item.Description" class="form-control" />
+                <span asp-validation-for="Item.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Item.Notes" class="control-label"></label>
+                <input asp-for="Item.Notes" class="form-control" />
+                <span asp-validation-for="Item.Notes" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Item.IsOnSale" /> @Html.DisplayNameFor(model => model.Item.IsOnSale)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="Item.PurchasedDate" class="control-label"></label>
+                <input asp-for="Item.PurchasedDate" class="form-control" />
+                <span asp-validation-for="Item.PurchasedDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Item.SoldDate" class="control-label"></label>
+                <input asp-for="Item.SoldDate" class="form-control" />
+                <span asp-validation-for="Item.SoldDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Item.PurchasePrice" class="control-label"></label>
+                <input asp-for="Item.PurchasePrice" class="form-control" />
+                <span asp-validation-for="Item.PurchasePrice" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Item.CurrentValue" class="control-label"></label>
+                <input asp-for="Item.CurrentValue" class="form-control" />
+                <span asp-validation-for="Item.CurrentValue" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Item.CategoryId" class="control-label"></label>
+                <select asp-for="Item.CategoryId" class="form-control" asp-items="ViewBag.CategoryId"></select>
+                <span asp-validation-for="Item.CategoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Genres</label>
+                <select asp-for="SelectedGenreIds" asp-items="ViewBag.GenreId" multiple="multiple" class="form-control"></select>
+            </div>
+            <div class="form-group">
+                <label>Contributors</label>
+                <select asp-for="SelectedContributorIds" asp-items="ViewBag.Contributors" multiple="multiple" class="form-control"></select>
+            </div>
+            <!-- Hidden audit fields -->
+            <input asp-for="Item.CreatedByUserId" type="hidden" />
+            <input asp-for="Item.CreatedDate" type="hidden" />
+            <input type="hidden" asp-for="Item.Id" />
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Item.IsActive" /> @Html.DisplayNameFor(model => model.Item.IsActive)
+                </label>
+            </div>
+            <div class="form-group" style="padding-top:10px;">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

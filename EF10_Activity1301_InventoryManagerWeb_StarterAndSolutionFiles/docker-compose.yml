@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: pef10_sql  
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Password#123!
+    ports:
+      - "1433:1433"
+    networks:
+      - invmgrnet
+    volumes:
+      - C:\ContainerStorageVolumes\SQLServer2022_CH13\backup:/var/opt/mssql/backup
+      - C:\ContainerStorageVolumes\SQLServer2022_CH13\data:/var/opt/mssql/data
+      - C:\ContainerStorageVolumes\SQLServer2022_CH13\log:/var/opt/mssql/log
+      - C:\ContainerStorageVolumes\SQLServer2022_CH13\secrets:/var/opt/mssql/secrets
+
+  invmgrweb:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: invmgrweb   
+    depends_on:
+      - sqlserver
+    environment:
+      - "ConnectionStrings__InventoryDbConnection=Server=sqlserver;Database=InventoryManagerDB1301;User Id=sa;Password=Password#123!;TrustServerCertificate=True;MultipleActiveResultSets=true"
+      - "ConnectionStrings__InventoryManagerIdentityDB=Server=sqlserver;Database=InventoryManagerIdentityDB1301;User Id=sa;Password=Password#123!;TrustServerCertificate=True;MultipleActiveResultSets=true"
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    networks:
+      - invmgrnet
+
+networks:
+  invmgrnet:

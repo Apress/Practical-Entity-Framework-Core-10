@@ -1,0 +1,32 @@
+# Publish the App as a Docker Image
+
+on:
+  workflow_call:
+    secrets:
+      GHCR_TOKEN:
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker Images
+        run: |
+          repo=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          docker build -t ghcr.io/$repo/invmgrweb:${{ github.sha }} .
+          docker tag ghcr.io/$repo/invmgrweb:${{ github.sha }} ghcr.io/$repo/invmgrweb:latest
+      
+      - name: Login to GHCR
+        run: echo $CR_PAT | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        env:
+          CR_PAT: ${{ secrets.GHCR_TOKEN }}
+
+      - name: Push Docker Images
+        run: |
+          repo=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          docker push ghcr.io/$repo/invmgrweb:${{ github.sha }}
+          docker push ghcr.io/$repo/invmgrweb:latest
+        env:
+          CR_PAT: ${{ secrets.GHCR_TOKEN }}

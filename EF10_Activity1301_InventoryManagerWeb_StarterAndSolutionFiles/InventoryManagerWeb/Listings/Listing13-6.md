@@ -1,0 +1,185 @@
+# Listing 13-6: Deployment
+
+This deployment doesn't use any IaC and uses a fully imperative scripting approach. This is prone to errors and can take longer to run since it is all done in series.  Consider using IaC instead.
+
+## The Action
+
+The action to deploy using CLI command is below:
+
+```yml
+name: Azure App Service Deploy
+
+on:
+  workflow_call:
+    secrets:
+      AZURE_CLIENT_ID:
+        required: true
+      AZURE_TENANT_ID:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  RG_NAME: rg-InventoryManager
+  LOCATION: centralus
+  SQL_SERVER: invmgrsql20251231blg
+  SQL_DB: invmgrdb
+  APP_PLAN: asp-InventoryManager
+  APP_NAME: app-invmgr-20251231blg
+  ADMIN_USER: sqladmin
+  ADMIN_PASS: "Password#123!"
+  APP_SERVICE_SKU: P0V3
+  CONTAINER_USERNAME: blgorman
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Create Resource Group
+        run: |
+          az group create \
+            --name $RG_NAME \
+            --location $LOCATION
+
+      - name: Create SQL Server and Database
+        run: |
+          az sql server create \
+            --name $SQL_SERVER \
+            --resource-group $RG_NAME \
+            --location $LOCATION \
+            --admin-user $ADMIN_USER \
+            --admin-password $ADMIN_PASS
+
+          az sql server firewall-rule create \
+            --resource-group $RG_NAME \
+            --server $SQL_SERVER \
+            --name AllowAzureServices \
+            --start-ip-address 0.0.0.0 \
+            --end-ip-address 0.0.0.0
+
+          az sql db create \
+            --resource-group $RG_NAME \
+            --server $SQL_SERVER \
+            --name $SQL_DB \
+            --service-objective Basic
+
+      - name: Create App Service Plan
+        run: |
+          az appservice plan create \
+            --name $APP_PLAN \
+            --resource-group $RG_NAME \
+            --sku $APP_SERVICE_SKU \
+            --is-linux
+
+      - name: Create Web App and Staging Slot
+        run: |
+          az webapp create \
+            --resource-group $RG_NAME \
+            --plan $APP_PLAN \
+            --name $APP_NAME \
+            --multicontainer-config-type DOCKER \
+            --multicontainer-config-file /dev/null || true
+
+          az webapp deployment slot create \
+            --resource-group $RG_NAME \
+            --name $APP_NAME \
+            --slot staging \
+            --configuration-source $APP_NAME
+
+      - name: Set Config Permissions
+        run: |
+          az webapp config container set \
+            --name $APP_NAME \
+            --resource-group $RG_NAME \
+            --container-image-name ghcr.io/$CONTAINER_USERNAME/inventorymanagerweb/invmgrweb:latest \
+            --container-registry-url https://ghcr.io \
+            --container-registry-user $CONTAINER_USERNAME \
+            --container-registry-password ${{ secrets.GHCR_TOKEN }} \
+            --enable-app-service-storage false
+
+          az webapp config container set \
+            --name $APP_NAME \
+            --slot staging \
+            --resource-group $RG_NAME \
+            --container-image-name ghcr.io/$CONTAINER_USERNAME/inventorymanagerweb/invmgrweb:latest \
+            --container-registry-url https://ghcr.io \
+            --container-registry-user $CONTAINER_USERNAME \
+            --container-registry-password ${{ secrets.GHCR_TOKEN }} \
+            --enable-app-service-storage false
+
+      - name: Remove legacy LocalSqlServer (staging + prod)
+        run: |
+          az webapp config connection-string delete \
+            --resource-group $RG_NAME \
+            --name $APP_NAME \
+            --slot staging \
+            --setting-names LocalSqlServer || true
+
+          az webapp config connection-string delete \
+            --resource-group $RG_NAME \
+            --name $APP_NAME \
+            --setting-names LocalSqlServer || true
+
+      - name: Set ALL connection strings for staging
+        run: |
+          CS="Server=tcp:${SQL_SERVER}.database.windows.net,1433;Initial Catalog=${SQL_DB};User ID=${ADMIN_USER};Password=${ADMIN_PASS};Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"
+          az webapp config appsettings set \
+            --resource-group $RG_NAME \
+            --name $APP_NAME \
+            --slot staging \
+            --settings ConnectionStrings__InventoryManagerIdentityDB="$CS" \
+                      ConnectionStrings__InventoryDbConnection="$CS" \
+                      ASPNETCORE_ENVIRONMENT=Staging
+
+      - name: Set ALL connection strings for production
+        run: |
+          CS="Server=tcp:${SQL_SERVER}.database.windows.net,1433;Initial Catalog=${SQL_DB};User ID=${ADMIN_USER};Password=${ADMIN_PASS};Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"
+          az webapp config appsettings set \
+            --resource-group $RG_NAME \
+            --name $APP_NAME \
+            --settings ConnectionStrings__InventoryManagerIdentityDB="$CS" \
+                      ConnectionStrings__InventoryDbConnection="$CS" \
+                      ASPNETCORE_ENVIRONMENT=Production
+
+      - name: Set Health Check Path
+        run: |
+          az webapp update \
+            --resource-group $RG_NAME \
+            --name $APP_NAME \
+            --slot staging \
+            --set siteConfig.healthCheckPath="/"
+
+      - name: Restart Web App
+        run: |
+          az webapp restart \
+            --resource-group $RG_NAME \
+            --name $APP_NAME
+
+          az webapp restart \
+            --resource-group $RG_NAME \
+            --name $APP_NAME \
+            --slot staging
+
+      - name: Swap Staging to Production
+        run: |
+          az webapp deployment slot swap \
+            --resource-group $RG_NAME \
+            --name $APP_NAME \
+            --slot staging \
+            --target-slot production
+```  
