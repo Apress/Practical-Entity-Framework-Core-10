@@ -1,6 +1,6 @@
 # Apress Source Code
 
-This repository accompanies [*Practical Entity Framework Core 10*](https://www.link.springer.com/book/10.1007/979-8-8688-2123-3) by Brian Gorman (Apress, 2025).
+This repository accompanies [*Practical Entity Framework Core 10*](https://link.springer.com/book/9798868821226) by Brian Gorman (Apress, 2025).
 
 [comment]: #cover
 ![Cover image](979-8-8688-2122-6.jpg)
